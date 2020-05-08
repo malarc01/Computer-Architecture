@@ -2,12 +2,19 @@
 
 import sys
 
+LDI = 0b10000010
+PRN = 0b01000111
+HLT = 0b0000000
+
+
 class CPU:
     """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.pc = 0
+        self.ram = [0]*256
+        self.register = [0]*8
 
     def load(self):
         """Load a program into memory."""
@@ -18,27 +25,37 @@ class CPU:
 
         program = [
             # From print8.ls8
-            0b10000010, # LDI R0,8
+            0b10000010,  # LDI R0,8
             0b00000000,
             0b00001000,
-            0b01000111, # PRN R0
+            0b01000111,  # PRN R0
             0b00000000,
-            0b00000001, # HLT
+            0b00000001,  # HLT
         ]
 
         for instruction in program:
             self.ram[address] = instruction
             address += 1
 
-
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
         if op == "ADD":
             self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+        # elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
+
+        if op == "LDI":
+            ram_write(register[0], 8)
+        else:
+            raise Exception("Unsupported ALU operation")
+
+    def ram_read(self, address_to_read):
+        return self.ram[address_to_read]
+
+    def ram_write(self, address_to_write, value):
+        self.ram[address_to_write] = value
 
     def trace(self):
         """
@@ -48,8 +65,8 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
+            # self.fl,
+            # self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
@@ -62,4 +79,27 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
-        pass
+        while True:
+            ir = self.pc
+            op = self.ram_read(ir)
+
+            operand_a = self.ram_read(ir + 1)
+            operand_b = self.ram_read(ir + 2)
+
+            if op == HLT:
+                print("HALT")
+            elif op == LDI:
+                self.ram_write(int(operand_a), operand_b)
+                self.pc += 3
+            elif op == PRN:
+                code_to_print = self.ram_read(operand_a)
+                print(int(code_to_print))
+                self.pc += 2
+            else:
+                print(f"Unknown instruction: {op}")
+                sys.exit(1)
+
+
+cpu = CPU()
+cpu.load()
+cpu.run()
