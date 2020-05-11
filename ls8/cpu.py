@@ -4,7 +4,7 @@ import sys
 
 LDI = 0b10000010
 PRN = 0b01000111
-HLT = 0b0000000
+HLT = 0b00000001
 MUL = 0b10100010
 
 
@@ -31,7 +31,7 @@ class CPU:
         filename = sys.argv[1]
         with open(filename) as f:
             for line in f:
-                print(line)
+                print("line=>", line)
                 if line == '':
                     continue
                 comment_split = line.split('#')
@@ -121,9 +121,9 @@ class CPU:
 
             if op == HLT:
                 print("HALTING")
-                running = False
+                self.running = False
                 print("HALTED")
-                pc += 1
+                self.pc += 1
 
             elif op == LDI:
                 self.register[operand_a] = operand_b
