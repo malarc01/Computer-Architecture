@@ -21,45 +21,44 @@ class CPU:
         self.running = True
 
         # branch setup
-        self.branchtable = {}
-        self.branchtable[LDI] = self.handle_LDI
-        self.branchtable[PRN] = self.handle_PRN
-        self.branchtable[HLT] = self.handle_HLT
-        self.branchtable[MUL] = self.handle_MUL
-        self.branchtable[PUSH] = self.handle_PUSH
-        self.branchtable[POP] = self.handle_POP
+        # self.branchtable = {}
+        # self.branchtable[LDI] = self.handle_LDI
+        # self.branchtable[PRN] = self.handle_PRN
+        # self.branchtable[HLT] = self.handle_HLT
+        # self.branchtable[MUL] = self.handle_MUL
+        # self.branchtable[PUSH] = self.handle_PUSH
+        # self.branchtable[POP] = self.handle_POP
 
-        self.branchtable = {
-            HLT: self.HLT,
-            MUL: self.alu,
-            ADD: self.alu,
-            PUSH: self.PUSH,
-            POP: self.POP,
-            LDI: self.LDI,
-            PRN: self.PRN
+        # self.branchtable = {
+        #     HLT: self.HLT,
+        #     MUL: self.alu,
+        #     ADD: self.alu,
+        #     PUSH: self.PUSH,
+        #     POP: self.POP,
+        #     LDI: self.LDI,
+        #     PRN: self.PRN
 
-        }
-        self.branchtable[PUSH] = self.handle_push
-        self.branchtable[POP] = self.handle_pop
+        # }
+        # self.branchtable[PUSH] = self.handle_push
+        # self.branchtable[POP] = self.handle_pop
 
-    def handle_LDI(self, a):
-        print("op LDI: " + a)
+    # def handle_LDI(self, a):
+    #     print("op LDI: " + a)
 
-    def handle_PRN(self, a):
-        print("op PRN: " + a)
+    # def handle_PRN(self, a):
+    #     print("op PRN: " + a)
 
-    def handle_HLT(self, a):
-        print("op HLT: " + a)
+    # def handle_HLT(self, a):
+    #     print("op HLT: " + a)
 
-    def handle_MUL(self, a):
-        print("op MUL: " + a)
+    # def handle_MUL(self, a):
+    #     print("op MUL: " + a)
 
-    def handle_PUSH(self, a):
-        print("op PUSH: " + a)
+    # def handle_PUSH(self, a):
+    #     print("op PUSH: " + a)
 
-    def handle_POP(self, a):
-        print("op POP: " + a)
-
+    # def handle_POP(self, a):
+    #     print("op POP: " + a)
 
     def load(self):
         """Load a program into memory."""
@@ -74,14 +73,14 @@ class CPU:
         filename = sys.argv[1]
         with open(filename) as f:
             for line in f:
-                print("line=>", line)
+                # print("line=>", line)
                 if line == '':
                     continue
                 comment_split = line.split('#')
                 # print(comment_split) # everything
                 # print(comment_split)
                 num = comment_split[0].strip()
-                print("num=>", num)
+                # print("num=>", num)
 
                 x = int(num, 2)
 
@@ -116,7 +115,7 @@ class CPU:
         # elif op == "SUB": etc
 
         elif op == MUL:
-            print("INSIDE MUL")
+            # print("INSIDE MUL")
             self.register[reg_a] *= self.register[reg_b]
             self.pc += 3
 
@@ -126,12 +125,12 @@ class CPU:
             raise Exception("Unsupported ALU OPERATION")
 
     def ram_read(self, address_to_read):
-        print("reading_ram@address_to_read=>", address_to_read)
+        # print("reading_ram@address_to_read=>", address_to_read)
         return self.ram[address_to_read]
 
     def ram_write(self, address_to_write, value):
         self.ram[address_to_write] = value
-        print("ram_written-address_to_write,value=> ", address_to_write, value)
+        # print("ram_written-address_to_write,value=> ", address_to_write, value)
 
     def trace(self):
         """
@@ -162,15 +161,14 @@ class CPU:
             operand_a = self.ram_read(instruction_register + 1)
             operand_b = self.ram_read(instruction_register + 2)
 
-            instruction_register = op
-            self.branchtable[instruction_register]("foo")
+            # instruction_register = op
+            # self.branchtable[instruction_register]("foo")
 
-            instruction_register = op
-            self.branchtable[instruction_register]("bar")
+            # instruction_register = op
+            # self.branchtable[instruction_register]("bar")
 
-            if op in self.branchtable:
-                pass
-
+            # if op in self.branchtable:
+            #     pass
 
             if op == HLT:
                 print("HALTING")
