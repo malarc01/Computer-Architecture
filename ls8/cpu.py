@@ -6,6 +6,8 @@ LDI = 0b10000010
 PRN = 0b01000111
 HLT = 0b00000001
 MUL = 0b10100010
+PUSH = 0b01000101
+POP = 0b1000110
 
 
 class CPU:
@@ -17,6 +19,47 @@ class CPU:
         self.ram = [0]*256
         self.register = [0]*8
         self.running = True
+
+        # branch setup
+        self.branchtable = {}
+        self.branchtable[LDI] = self.handle_LDI
+        self.branchtable[PRN] = self.handle_PRN
+        self.branchtable[HLT] = self.handle_HLT
+        self.branchtable[MUL] = self.handle_MUL
+        self.branchtable[PUSH] = self.handle_PUSH
+        self.branchtable[POP] = self.handle_POP
+
+        self.branchtable = {
+            HLT: self.HLT,
+            MUL: self.alu,
+            ADD: self.alu,
+            PUSH: self.PUSH,
+            POP: self.POP,
+            LDI: self.LDI,
+            PRN: self.PRN
+
+        }
+        self.branchtable[PUSH] = self.handle_push
+        self.branchtable[POP] = self.handle_pop
+
+    def handle_LDI(self, a):
+        print("op LDI: " + a)
+
+    def handle_PRN(self, a):
+        print("op PRN: " + a)
+
+    def handle_HLT(self, a):
+        print("op HLT: " + a)
+
+    def handle_MUL(self, a):
+        print("op MUL: " + a)
+
+    def handle_PUSH(self, a):
+        print("op PUSH: " + a)
+
+    def handle_POP(self, a):
+        print("op POP: " + a)
+
 
     def load(self):
         """Load a program into memory."""
@@ -118,6 +161,16 @@ class CPU:
 
             operand_a = self.ram_read(instruction_register + 1)
             operand_b = self.ram_read(instruction_register + 2)
+
+            instruction_register = op
+            self.branchtable[instruction_register]("foo")
+
+            instruction_register = op
+            self.branchtable[instruction_register]("bar")
+
+            if op in self.branchtable:
+                pass
+
 
             if op == HLT:
                 print("HALTING")
