@@ -9,6 +9,8 @@ MUL = 0b10100010
 ADD = 0b10100000
 PUSH = 0b01000101
 POP = 0b1000110
+CALL = 0b01010000
+RET = 0b00010001
 
 
 class CPU:
@@ -24,11 +26,13 @@ class CPU:
         self.branchtable = {
             HLT: self.HLT,
             MUL: self.alu,
-
             PUSH: self.PUSH,
             POP: self.POP,
             LDI: self.LDI,
-            PRN: self.PRN
+            PRN: self.PRN,
+            ADD: self.alu,
+            CALL: self.CALL,
+            RET: self.RET
         }
 
         # branch setup
@@ -88,10 +92,10 @@ class CPU:
                 if line == '':
                     continue
                 comment_split = line.split('#')
-                # print(comment_split) # everything
-                # print(comment_split)
+                print(comment_split)  # everything
+                print(comment_split)
                 num = comment_split[0].strip()
-                # print("num=>", num)
+                print("num=>", num)
 
                 x = int(num, 2)
 
@@ -202,6 +206,17 @@ class CPU:
         self.register[register_a] = self.ram[self.register[7]]
         self.register[7] += 1
         self.pc += 2
+
+    def CALL(self, operand_a):
+        operand_a = self.pc + 2
+        self.register[7] -= 1
+        self.ram_write(self.register[7], operand_a)
+        from_ram = self.ram_read(self.pc + 1)
+        self.pc = self.register[from_ram]
+
+    def RET(self):
+        self.pc = self.ram_read(self.register[7])
+        self.register[7] += 1
 
     def HLT(self):
         sys.exit(0)
