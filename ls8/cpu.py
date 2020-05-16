@@ -11,6 +11,10 @@ PUSH = 0b01000101
 POP = 0b1000110
 CALL = 0b01010000
 RET = 0b00010001
+CMP = 0b10100111
+JMP = 0b01010100
+JNE = 0b01010110
+JEQ = 0b01010101
 
 
 class CPU:
@@ -22,6 +26,7 @@ class CPU:
         self.ram = [0]*256
         self.register = [0]*8
         self.running = True
+        self.flag = 0
 
         self.branchtable = {
             HLT: self.HLT,
@@ -32,7 +37,11 @@ class CPU:
             PRN: self.PRN,
             ADD: self.alu,
             CALL: self.CALL,
-            RET: self.RET
+            RET: self.RET,
+            JMP: self.JMP,
+            JNE: self.JNE,
+            JEQ: self.JEQ,
+            CMP: self.alu,
         }
 
         # branch setup
@@ -95,6 +104,9 @@ class CPU:
                 print(comment_split)  # everything
                 print(comment_split)
                 num = comment_split[0].strip()
+
+                if num == '':
+                    continue
                 print("num=>", num)
 
                 x = int(num, 2)
@@ -133,6 +145,15 @@ class CPU:
         elif op == MUL:
             # print("INSIDE MUL")
             self.register[reg_a] *= self.register[reg_b]
+            self.pc += 3
+
+        elif op == CMP:
+            if self.register[reg_a] == self.register[reg_b]:
+                self.flag = 0b00000001
+            if self.register[reg_a] < self.register[reg_b]:
+                self.flag = 0b00000010
+            if self.register[reg_a] > self.register[reg_b]:
+                self.flag = 0b00000100
             self.pc += 3
 
         # if op == LDI:
@@ -218,6 +239,22 @@ class CPU:
         self.pc = self.ram_read(self.register[7])
         self.register[7] += 1
 
+    def JMP(self, register_a):
+        self.pc = self.register[register_a]
+
+    def JNE(self, register_a):
+        if self.flag == 0b00000010 or self.flag == 0b00000100:
+            self.JMP(register_a)
+        else:
+            self.pc += 2
+
+    def JEQ(self, register_a):
+        # less, greater, equal
+        if self.flag == 0b00000001:
+            self.JMP(register_a)
+        else:
+            self.pc += 2
+
     def HLT(self):
         sys.exit(0)
 
@@ -237,7 +274,7 @@ class CPU:
             # self.branchtable[instruction_register]("bar")
 
             if op in self.branchtable:
-                if op in [ADD, MUL]:
+                if op in [ADD, MUL, CMP]:
                     self.branchtable[op](op, operand_a, operand_b)
                 elif op >> 6 == 0:
                     self.branchtable[op]()
